@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eyes Follow Mouse Cursor</title>
+
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            padding: 0;
+
+            grid-template-columns: 1fr;
+            grid-template-rows: 100vh;
+
+            display: grid;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .eyesContainer {
+            width: 200px;
+            height: 200px;
+            background-color: darkorchid;
+            border-radius: 10px;
+            filter: drop-shadow(0 30px 70px #d606f6);
+
+            display: grid;
+            align-items: center;
+            justify-items: center;
+            grid-template-columns: 1fr 1fr;
+
+            transform-style: preserve-3d;
+            transform: perspective(500px) rotateX(var(--yAngle, 0deg)) rotateY(var(--xAngle, 0deg));
+            will-change: transform;
+        }
+
+        .eye {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: white;
+            transform: rotate(var(--eyeAngle, 0deg));
+        }
+
+        .pupil {
+            width: 16px;
+            height: 16px;
+            position: relative;
+
+            background-color: black;
+            border-radius: 50%;
+            top: calc(50% - 8px);
+            left: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="eyesContainer">
+        <div class="eye">
+            <div class="pupil"></div>
+        </div>
+        <div class="eye">
+            <div class="pupil"></div>
+
+        </div>
+    </div>
+
+    <script>
+
+        let eyes = document.querySelectorAll(".eye");
+        let eyeRect = eyes[0].getBoundingClientRect();
+
+        let container = document.querySelector(".eyesContainer");
+        let containerRect = container.getBoundingClientRect();
+
+        document.body.addEventListener("mousemove", eyesFollow, false);
+
+        function eyesFollow(e) {
+            requestAnimationFrame(() => {
+                let xPos = e.pageX;
+                let yPos = e.pageY;
+
+                let xDiff = (eyeRect.x + eyeRect.width / 2) - xPos;
+                let yDiff = (eyeRect.y + eyeRect.height / 2) - yPos;
+
+                let angle = Math.atan2(yDiff, xDiff) * 180 / Math.PI;
+
+                container.style.setProperty("--eyeAngle", angle.toFixed(2) + "deg");
+
+                // Titing the face  
+
+
+                let mouseXRelativeToContainer = xPos - containerRect.x - container.width / 2;
+                let mouseYRelativeToContainer = yPos - containerRect.y - containerRect.height / 2;
+
+                let containerXAngle = 60 * (mouseXRelativeToContainer / window.innerWidth);
+                let containerYAngle = -1 * 60 * (mouseYRelativeToContainer / window.innerHeight);
+
+                container.style.setProperty("--xAngle", containerXAngle.toFixed(2) + "deg");
+                container.style.setProperty("--yAngle", containerYAngle.toFixed(2) + "deg");
+
+
+            });
+        }
+
+    </script>
+
+
+</body>
+
+</html>
